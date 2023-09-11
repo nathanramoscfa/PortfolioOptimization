@@ -1,4 +1,3 @@
-import json
 import pandas as pd
 from yahooquery import Ticker
 from typing import List, Dict, Tuple, Optional
