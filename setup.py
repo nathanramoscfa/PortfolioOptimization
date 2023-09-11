@@ -6,15 +6,15 @@ with open("requirements.txt") as f:
 
 setup(
     name="PortfolioOptimization",
-    version="0.0.1",  # Update the version number for each new release
+    version="0.0.2",  # Update the version number for each new release
     author="Nathan Ramos",
     author_email="nathan.ramos.github@gmail.com",
     description="A package for portfolio optimization.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/nathanramoscfa/PortfolioOptimization.git",
-    packages=find_packages(where='src'),  # Automatically discover and include all packages in the src/ directory
-    package_dir={'': 'src'},
+    packages=find_packages(where='portopt'),  # Automatically discover and include all packages in the portopt/ directory
+    package_dir={'': 'portopt'},
     install_requires=requirements,
     classifiers=[
         "Development Status :: 3 - Alpha",
