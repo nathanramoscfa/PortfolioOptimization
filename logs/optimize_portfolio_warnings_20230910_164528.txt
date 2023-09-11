@@ -1,0 +1,17 @@
+SolverError encountered. Incrementing target_risk.
+SolverError encountered. Incrementing target_risk.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.

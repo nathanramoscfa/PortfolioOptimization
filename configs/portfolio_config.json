@@ -1,0 +1,37 @@
+{
+    "portfolio": [
+        {
+            "ticker": "SPY",
+            "min_weight": 0,
+            "max_weight": 1.0,
+            "view": 0.0044,
+            "confidence": 0.4415
+        },
+        {
+            "ticker": "BND",
+            "min_weight": 0,
+            "max_weight": 1.0,
+            "view": 0.0500,
+            "confidence": 0.5000
+        },
+        {
+            "ticker": "GLD",
+            "min_weight": 0,
+            "max_weight": 0.1
+        },
+        {
+            "ticker": "GBTC",
+            "min_weight": 0,
+            "max_weight": 0.05
+        },
+        {
+            "ticker": "BTAL",
+            "min_weight": 0,
+            "max_weight": 0.05
+        }
+    ],
+    "start_date": "2000-01-01",
+    "end_date": "2023-09-01",
+    "n_portfolios": 1000,
+    "nsim": 1000
+}
