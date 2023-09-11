@@ -1,8 +1,5 @@
-import os
-import warnings
 import pandas as pd
 import numpy as np
-from datetime import datetime
 from typing import List, Tuple, Dict
 from tqdm import tqdm
 from cvxpy import SolverError
@@ -166,39 +163,27 @@ def get_max_risk(
         risk_free_rate: float,
         min_risk: float) -> float:
     max_risk = 0  # Initialize to zero
-    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file_path = os.path.join('../logs', f'get_max_risk_warnings_{current_time}.txt')
+    for i, target_risk in tqdm(enumerate(np.linspace(min_risk + 0.0005, 1.0, 10))):
+        while True:  # Infinite loop to keep retrying with incremented target_risk
+            try:
+                historical_returns = expected_returns.returns_from_prices(historical_prices)
+                es = EfficientSemivariance(posterior_expected_returns, historical_returns,
+                                           weight_bounds=weight_bounds)
+                es.efficient_risk(target_risk)
+                performance = es.portfolio_performance(risk_free_rate=risk_free_rate)
 
-    with open(log_file_path, 'w') as f:
-        with warnings.catch_warnings(record=True) as w:
-            warnings.filterwarnings("always")
+                # Update max_risk if this portfolio has higher risk
+                max_risk = max(max_risk, performance[1])
 
-            for i, target_risk in tqdm(enumerate(np.linspace(min_risk + 0.0005, 1.0, 10))):
-                while True:  # Infinite loop to keep retrying with incremented target_risk
-                    try:
-                        historical_returns = expected_returns.returns_from_prices(historical_prices)
-                        es = EfficientSemivariance(posterior_expected_returns, historical_returns,
-                                                   weight_bounds=weight_bounds)
-                        es.efficient_risk(target_risk)
-                        performance = es.portfolio_performance(risk_free_rate=risk_free_rate)
+                # If no error, break the infinite loop
+                break
 
-                        # Update max_risk if this portfolio has higher risk
-                        max_risk = max(max_risk, performance[1])
+            except SolverError:  # Catch the specific SolverError
+                target_risk += 0.0005  # increment target_risk by 0.0005
+                continue  # continue the while loop
 
-                        # If no error, break the infinite loop
-                        break
-
-                    except SolverError:  # Catch the specific SolverError
-                        f.write("SolverError encountered. Incrementing target_risk.\n")
-                        target_risk += 0.0005  # increment target_risk by 0.0005
-                        continue  # continue the while loop
-
-                    except OptimizationError:  # Catch the specific OptimizationError
-                        f.write("OptimizationError encountered. Skipping to next target_risk.\n")
-                        break  # break the infinite loop and continue with the next 'target_risk' value
-
-            for warning in w:
-                f.write(str(warning.message) + '\n')
+            except OptimizationError:  # Catch the specific OptimizationError
+                break  # break the infinite loop and continue with the next 'target_risk' value
 
     return max_risk
 
@@ -248,54 +233,42 @@ def optimize_portfolio(
     weights_df_optimal = min_risk_weights.copy()
     weights_df_optimal.columns = [1]  # First column is the min risk portfolio
 
-    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file_path = os.path.join('../logs', f'optimize_portfolio_warnings_{current_time}.txt')
+    successful_runs = 1 # Initialize to 1 because the first row is the min risk portfolio
+    risk_range = np.linspace(min_risk + 0.0005, max_risk, 99)
+    for i, target_risk in tqdm(enumerate(risk_range)):
+        if successful_runs >= 100:  # Stop if 100 successful portfolios are generated
+            break
 
-    with open(log_file_path, 'w') as f:
-        with warnings.catch_warnings(record=True) as w:
-            warnings.filterwarnings("always")
+        while True:  # Infinite loop to keep retrying with incremented target_risk
+            try:
+                # Run the optimization
+                historical_returns = expected_returns.returns_from_prices(historical_prices)
+                es = EfficientSemivariance(posterior_expected_returns, historical_returns,
+                                           weight_bounds=weight_bounds)
+                es.efficient_risk(target_risk)
+                weights = es.clean_weights()
 
-            successful_runs = 1 # Initialize to 1 because the first row is the min risk portfolio
-            risk_range = np.linspace(min_risk + 0.0005, max_risk, 99)
-            for i, target_risk in tqdm(enumerate(risk_range)):
-                if successful_runs >= 100:  # Stop if 100 successful portfolios are generated
-                    break
+                # Store the performance
+                performance = es.portfolio_performance(risk_free_rate=risk_free_rate)
+                performance_df_optimal.loc[successful_runs + 1] = performance
 
-                while True:  # Infinite loop to keep retrying with incremented target_risk
-                    try:
-                        # Run the optimization
-                        historical_returns = expected_returns.returns_from_prices(historical_prices)
-                        es = EfficientSemivariance(posterior_expected_returns, historical_returns,
-                                                   weight_bounds=weight_bounds)
-                        es.efficient_risk(target_risk)
-                        weights = es.clean_weights()
+                # Convert weights to dataframe and store
+                temp_weights_df = pd.DataFrame(list(weights.items()), columns=['symbol', 'weight']).set_index(
+                    'symbol')
+                temp_weights_df.columns = [successful_runs + 1]
+                weights_df_optimal = pd.concat([weights_df_optimal, temp_weights_df], axis=1)
 
-                        # Store the performance
-                        performance = es.portfolio_performance(risk_free_rate=risk_free_rate)
-                        performance_df_optimal.loc[successful_runs + 1] = performance
+                successful_runs += 1
 
-                        # Convert weights to dataframe and store
-                        temp_weights_df = pd.DataFrame(list(weights.items()), columns=['symbol', 'weight']).set_index(
-                            'symbol')
-                        temp_weights_df.columns = [successful_runs + 1]
-                        weights_df_optimal = pd.concat([weights_df_optimal, temp_weights_df], axis=1)
+                # If no error, break the infinite loop
+                break
 
-                        successful_runs += 1
+            except SolverError:  # Catch the specific SolverError
+                target_risk += 0.0005  # increment target_risk by 0.0005
+                continue  # continue the while loop
 
-                        # If no error, break the infinite loop
-                        break
-
-                    except SolverError:  # Catch the specific SolverError
-                        f.write("SolverError encountered. Incrementing target_risk.\n")
-                        target_risk += 0.0005  # increment target_risk by 0.0005
-                        continue  # continue the while loop
-
-                    except OptimizationError:  # Catch the specific OptimizationError
-                        f.write("OptimizationError encountered. Skipping to next target_risk.\n")
-                        break  # break the infinite loop and continue with the next 'target_risk' value
-
-            for warning in w:
-                f.write(str(warning.message) + '\n')
+            except OptimizationError:  # Catch the specific OptimizationError
+                break  # break the infinite loop and continue with the next 'target_risk' value
 
     performance_df_optimal = performance_df_optimal.T.round(4)
     weights_df_optimal = weights_df_optimal.round(4)
