@@ -1,3 +1,22 @@
+Metadata-Version: 2.1
+Name: PortfolioOptimization
+Version: 0.0.0
+Summary: A package for portfolio optimization.
+Home-page: https://github.com/nathanramoscfa/PortfolioOptimization.git
+Author: Nathan Ramos
+Author-email: nathan.ramos.github@gmail.com
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Financial and Insurance Industry
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE.md
+
 # PortfolioOptimization
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)

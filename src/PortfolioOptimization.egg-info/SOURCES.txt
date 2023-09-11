@@ -1,0 +1,8 @@
+LICENSE.md
+README.md
+setup.py
+src/PortfolioOptimization.egg-info/PKG-INFO
+src/PortfolioOptimization.egg-info/SOURCES.txt
+src/PortfolioOptimization.egg-info/dependency_links.txt
+src/PortfolioOptimization.egg-info/requires.txt
+src/PortfolioOptimization.egg-info/top_level.txt
