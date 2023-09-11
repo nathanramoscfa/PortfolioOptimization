@@ -1,4 +1,5 @@
 import ffn
+import backtesting
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -6,7 +7,6 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from scipy.stats import norm
 from typing import Any, Tuple
-from . import backtesting
 
 
 def format_with_percent(x: Any, pos: Any) -> str:
