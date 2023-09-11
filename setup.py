@@ -13,8 +13,7 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/nathanramoscfa/PortfolioOptimization.git",
-    packages=find_packages(where='.'),  # Automatically discover and include all packages in the package directory
-    package_dir={'': '.'},
+    packages=find_packages(),
     install_requires=requirements,
     classifiers=[
         "Development Status :: 3 - Alpha",
