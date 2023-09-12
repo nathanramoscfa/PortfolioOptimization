@@ -1,7 +1,7 @@
 import json
 import pandas as pd
-import backtesting
-import plotting
+from . import backtesting
+from . import plotting
 import matplotlib.pyplot as plt
 from typing import Dict
 
