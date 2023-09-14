@@ -1,5 +1,5 @@
-git+https://github.com/nathanramoscfa/bt.git
-git+https://github.com/nathanramoscfa/ffn.git
+git+https://github.com/nathanramoscfa/bt.git#egg=bt
+git+https://github.com/nathanramoscfa/ffn.git#egg=ffn
 cvxpy~=1.3.2
 matplotlib~=3.7.1
 numpy~=1.23.5
