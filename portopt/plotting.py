@@ -242,7 +242,6 @@ def plot_market_implied_expected_returns(
         ax.yaxis.set_major_formatter(formatter)
 
         plt.title('Market-Implied Expected Return (%)\nas of {}'.format(
-            historical_prices.index[0].strftime('%Y-%m-%d'),
             historical_prices.index[-1].strftime('%Y-%m-%d')
         ))
 
@@ -278,7 +277,6 @@ def plot_posterior_expected_returns(
         ax.yaxis.set_major_formatter(formatter)
 
         plt.title('Posterior Expected Return (%)\nas of {}'.format(
-            historical_prices.index[0].strftime('%Y-%m-%d'),
             historical_prices.index[-1].strftime('%Y-%m-%d')
         ))
 
@@ -697,6 +695,7 @@ def plot_dev_chart(
 
 def plot_optimal_portfolio(
         optimal_weights: pd.Series,
+        historical_prices: pd.DataFrame,
         color_palette: str = 'colorblind',
         **kwargs) -> None:
     """
@@ -704,6 +703,7 @@ def plot_optimal_portfolio(
 
     Parameters:
     - optimal_weights (pd.Series): The optimal portfolio weightings.
+    - historical_prices (pd.DataFrame): The historical price data for the date range in the title.
     - color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
 
     Returns:
@@ -718,7 +718,9 @@ def plot_optimal_portfolio(
         formatter = FuncFormatter(format_with_percent)
         ax.yaxis.set_major_formatter(formatter)
 
-        plt.title('Optimal Portfolio Weightings (%)')
+        plt.title('Optimal Portfolio Weightings (%)\nas of {}'.format(
+            historical_prices.index[-1].strftime('%Y-%m-%d')
+        ))
 
         plt.grid()
         plt.show()
