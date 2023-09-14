@@ -6,8 +6,8 @@ with open("requirements.txt") as f:
 
 setup(
     name="PortfolioOptimization",
-    version="0.0.6",
-    author="Nathan Ramos",
+    version="0.0.7",
+    author="Nathan Ramos, CFA®",
     author_email="nathan.ramos.github@gmail.com",
     description="A package for portfolio optimization.",
     long_description=open("README.md").read(),
@@ -24,6 +24,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11"
     ],
     python_requires='>=3.8',
 )

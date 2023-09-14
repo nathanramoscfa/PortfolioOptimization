@@ -51,6 +51,7 @@ def plot_average_return(
     Returns:
     - None
     """
+    average_historical_return = average_historical_return.sort_values(ascending=False)
     with plt.style.context('dark_background'):
         fig, ax = plt.subplots()
 
@@ -120,8 +121,9 @@ def plot_market_caps(
     - color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
 
     Returns:
-        None
+    - None
     """
+    market_caps = market_caps.sort_values(ascending=False)
     with plt.style.context('dark_background'):
         fig, ax = plt.subplots()
 
@@ -152,6 +154,7 @@ def plot_market_weights(
     Returns:
     - None
     """
+    market_weights = market_weights.sort_values(ascending=False)
     with plt.style.context('dark_background'):
         fig, ax = plt.subplots()
 
@@ -171,7 +174,8 @@ def plot_market_weights(
 def plot_correlation_matrix(
         covariance_matrix: pd.DataFrame,
         historical_prices: pd.DataFrame,
-        color_scheme: str = 'white') -> None:
+        color_scheme: str = 'white',
+        title: str = 'Correlation Matrix') -> None:
     """
     Plots the correlation matrix from a given covariance matrix.
 
@@ -179,6 +183,7 @@ def plot_correlation_matrix(
     - covariance_matrix (pd.DataFrame): The covariance matrix.
     - historical_prices (pd.DataFrame): The historical price data for the date range in the title.
     - color_scheme (str): The color scheme to use for the plot. Defaults to 'white'.
+    -
 
     Returns:
     - None
@@ -195,7 +200,10 @@ def plot_correlation_matrix(
         ax.figure.axes[-1].yaxis.label.set_color(color_scheme)  # Set color for colorbar label
         ax.figure.axes[-1].tick_params(axis='y', colors=color_scheme)  # Set color for colorbar tick marks
         plt.title(
-            'Correlation Matrix\nas of {}'.format(historical_prices.index[-1].strftime('%Y-%m-%d')), color=color_scheme)
+            '{}\nas of {}'.format(
+                title,
+                historical_prices.index[-1].strftime('%Y-%m-%d')
+            ), color=color_scheme)
         plt.xticks(color=color_scheme)
         plt.yticks(color=color_scheme)
         plt.xlabel('Tickers', color=color_scheme)
@@ -219,6 +227,7 @@ def plot_market_implied_expected_returns(
     Returns:
     - None
     """
+    market_implied_expected_returns = market_implied_expected_returns.sort_values(ascending=False)
     with plt.style.context('dark_background'):
         fig, ax = plt.subplots()
 
@@ -252,10 +261,10 @@ def plot_posterior_expected_returns(
     - posterior_expected_returns (pd.Series): The posterior expected return data.
     - historical_prices (pd.DataFrame): The historical price data for the date range in the title.
 
-
     Returns:
     - None
     """
+    posterior_expected_returns = posterior_expected_returns.sort_values(ascending=False)
     with plt.style.context('dark_background'):
         fig, ax = plt.subplots()
 
@@ -415,7 +424,6 @@ def plot_backtest(
     Returns:
     - None
     """
-
     data = backtesting.get_series_from_object(results_object)
 
     with plt.style.context('dark_background'):
@@ -685,3 +693,32 @@ def plot_dev_chart(
         plt.show()
     else:
         print("Invalid 'plot' parameter. Choose either 'security_weights' or 'cumulative_return'.")
+
+
+def plot_optimal_portfolio(
+        optimal_weights: pd.Series,
+        color_palette: str = 'colorblind',
+        **kwargs) -> None:
+    """
+    Plots the optimal portfolio as a bar chart.
+
+    Parameters:
+    - optimal_weights (pd.Series): The optimal portfolio weightings.
+    - color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
+
+    Returns:
+    - None
+    """
+    optimal_weights = optimal_weights.sort_values(ascending=False)
+    with plt.style.context('dark_background'):
+        fig, ax = plt.subplots()
+
+        sns.set_palette(color_palette)
+        ax.bar(list(optimal_weights.index), optimal_weights.to_list(), **kwargs)
+        formatter = FuncFormatter(format_with_percent)
+        ax.yaxis.set_major_formatter(formatter)
+
+        plt.title('Optimal Portfolio Weightings (%)')
+
+        plt.grid()
+        plt.show()

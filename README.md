@@ -1,7 +1,7 @@
 # PortfolioOptimization
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-v3.6+-blue.svg)
+![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
 
 PortfolioOptimization is a Python package for performing portfolio optimization using various algorithms and backtesting techniques. It is designed to be highly customizable, extensible, and easy to use. The project aims to assist financial analysts, investment advisers, and researchers in making data-driven investment decisions.
 
