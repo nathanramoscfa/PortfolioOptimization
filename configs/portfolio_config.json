@@ -33,5 +33,5 @@
     "start_date": "2000-01-01",
     "end_date": "2023-09-01",
     "n_portfolios": 1000,
-    "nsim": 1000
+    "n_simulations": 1000
 }

@@ -328,59 +328,6 @@ def get_ef_portfolios(
     return pd.concat([names, weights_df], axis=1)
 
 
-def generate_random_portfolios(
-        historical_prices: DataFrame,
-        posterior_expected_returns: Series,
-        risk_free_rate: float,
-        weight_bounds: List[Tuple[float, float]],
-        n_portfolios: int = 1000) -> Tuple[DataFrame, DataFrame, Series]:
-    """
-    Generate random portfolios based on Efficient Semivariance and return the optimal one based on Sortino ratio.
-
-    Parameters:
-    - historical_prices (DataFrame): Historical price data for the assets.
-    - posterior_expected_returns (Series): Posterior expected returns.
-    - risk_free_rate (float): Risk-free rate.
-    - weight_bounds (List[Tuple[float, float]]): Weight bounds for the portfolios.
-    - n_portfolios (int, optional): Number of random portfolios to generate.
-
-    Returns:
-        Tuple[DataFrame, DataFrame, Series]:
-            - pd.DataFrame: Performance DataFrame.
-            - pd.DataFrame: Weights DataFrame.
-            - pd.Series: Details of the optimal portfolio.
-    """
-    performance_df_mc = DataFrame(columns=['Expected annual return', 'Annual semi-deviation', 'Sortino ratio'])
-    weights_df_mc = DataFrame()
-
-    for portfolio_idx in range(n_portfolios):  # Changed i to portfolio_idx to avoid shadowing
-        try:
-            random_weights = random_weights_with_bounds(len(historical_prices.columns), weight_bounds)
-            random_weights_dict: Dict[str, float] = dict(zip(historical_prices.columns, random_weights))
-
-            es = EfficientSemivariance(posterior_expected_returns,
-                                       expected_returns.returns_from_prices(historical_prices))
-            es.set_weights(random_weights_dict)
-            performance = es.portfolio_performance(risk_free_rate=risk_free_rate)
-
-            performance_df_mc.loc[portfolio_idx] = performance
-
-            temp_weights_df = DataFrame(random_weights, index=historical_prices.columns, columns=[portfolio_idx])
-            if weights_df_mc.empty:
-                weights_df_mc = temp_weights_df
-            else:
-                weights_df_mc = pd.concat([weights_df_mc, temp_weights_df], axis=1)
-        except OptimizationError:
-            continue
-
-    weights_df_mc = weights_df_mc.round(4)
-
-    optimal_portfolio_index_mc = performance_df_mc['Sortino ratio'].idxmax()
-    optimal_portfolio_mc = performance_df_mc.iloc[optimal_portfolio_index_mc].round(4)
-
-    return performance_df_mc, weights_df_mc, optimal_portfolio_mc
-
-
 def random_weights_with_bounds(
         n: int,
         weight_bounds: List[Tuple[float, float]]) -> np.ndarray:

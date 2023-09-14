@@ -54,7 +54,7 @@ def process_json(json_data: Dict):
     start_date = json_data['start_date']
     end_date = json_data['end_date']
     n_portfolios = json_data['n_portfolios']
-    nsim = json_data['nsim']
+    n_simulations = json_data['n_simulations']
 
     return {
         'portfolio_tickers': portfolio_tickers,
@@ -64,7 +64,7 @@ def process_json(json_data: Dict):
         'start_date': start_date,
         'end_date': end_date,
         'n_portfolios': n_portfolios,
-        'nsim': nsim
+        'n_simulations': n_simulations
     }
 
 
@@ -95,3 +95,8 @@ def plot_hypothesis_test(results_obj: object, random_stats: pd.Series, chart_num
     elif chart_num == 1:
         plotting.plot_security_weights(results_obj, backtest=int(random_stats.index[0].split('_')[1]),
                                        title='Security Weights (%): {}'.format(random_stats.index[0]))
+
+
+def display_market_caps(benchmark_portfolio, benchmark_name):
+    pd.DataFrame.from_dict(benchmark_portfolio, orient='index', columns=[benchmark_name]).squeeze().sort_values(
+        ascending=False)
