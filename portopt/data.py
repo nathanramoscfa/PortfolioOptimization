@@ -21,7 +21,7 @@ def get_historical_prices(
     - end_date (str, optional): End date for data retrieval. Defaults to None.
 
     Returns:
-        pd.DataFrame: DataFrame containing historical prices.
+    - pd.DataFrame: DataFrame containing historical prices.
     """
     ticker_string = ' '.join(tickers)
     data = Ticker(ticker_string).history(period=period, start=start_date, end=end_date)['adjclose'].reset_index()
@@ -42,6 +42,23 @@ def format_historical_data(data: pd.DataFrame) -> pd.DataFrame:
     return df.sort_index(axis=1)
 
 
+def get_summary_profile(tickers: List[str]) -> pd.DataFrame:
+    """
+    Fetch summary profile for a list of stock tickers.
+
+    Parameters:
+    - tickers (List[str]): List of stock tickers to fetch summary profile for.
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing summary profile for each ticker,
+        sorted by ticker symbol.
+    """
+    ticker_string = ' '.join(tickers)
+    data_dict = Ticker(ticker_string).summary_profile
+    summary_profile = pd.DataFrame.from_dict(data_dict, orient='index')
+    return summary_profile.transpose().sort_index(axis=1)
+
+
 def get_summary_details(tickers: List[str]) -> pd.DataFrame:
     """
     Fetch summary details for a list of stock tickers.
@@ -56,6 +73,113 @@ def get_summary_details(tickers: List[str]) -> pd.DataFrame:
     data_dict = Ticker(ticker_string).summary_detail
     summary_detail = pd.DataFrame.from_dict(data_dict, orient='index')
     return summary_detail.transpose().sort_index(axis=1)
+
+
+def get_key_stats(tickers: List[str]) -> pd.DataFrame:
+    """
+    Fetch key statistics for a list of tickers.
+
+    Parameters:
+    - tickers (List[str]): List of tickers to fetch details for.
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing key statistics for each ticker, sorted by ticker symbol.
+    """
+    ticker_string = ' '.join(tickers)
+    data_dict = Ticker(ticker_string).key_stats
+    key_stats = pd.DataFrame.from_dict(data_dict, orient='index')
+    return key_stats.transpose().sort_index(axis=1)
+
+
+def get_earnings_trend(tickers: List[str]) -> dict:
+    """
+    Extracts 'earningsEstimate', 'revenueEstimate', 'epsTrend', and 'epsRevisions'
+    for each ticker into their own DataFrames, structured into a dictionary with keys
+    indicating the timeframe and data section.
+
+    Parameters:
+    - tickers (List[str]): List of stock tickers.
+
+    Returns:
+    - dict: A dictionary containing DataFrames for each of the specified sections
+      and ticker, keyed by timeframe and data section.
+    """
+
+    def extract_section(section_data, section_name, period):
+        data = [item.get(section_name, {}) for item in section_data if section_name in item]
+        if period < len(data):
+            return pd.DataFrame(data[period], index=[0])
+        return pd.DataFrame(columns=["avg", "low", "high", "yearAgoEps", "numberOfAnalysts", "growth"])
+
+    def download_earnings_trend() -> pd.DataFrame:
+        ticker_string = ' '.join(tickers)
+        data_dict = Ticker(ticker_string).earnings_trend
+        earnings_trend = pd.DataFrame.from_dict(data_dict, orient='index')
+        return earnings_trend.transpose().sort_index(axis=1)
+
+    # Download earnings trend data
+    df = download_earnings_trend()
+
+    # Initialize the dictionary to hold the DataFrames
+    dataframe_dict = {}
+
+    for ticker in tickers:
+        ticker_series = df.get(ticker)
+
+        if isinstance(ticker_series, pd.Series):
+            ticker_data = ticker_series.to_dict()
+        else:
+            continue
+
+        if 'trend' in ticker_data and isinstance(ticker_data['trend'], list):
+            ticker_trend_data = ticker_data['trend']
+        else:
+            print(f"No 'trend' data for ticker: {ticker}")
+            continue
+
+        # Each section is split into current quarter/year and next quarter/year
+        periods = ['0q', '+1q', '0y', '+1y']
+        for period_idx, period_prefix in enumerate(periods):
+            for section in ['earningsEstimate', 'revenueEstimate', 'epsTrend', 'epsRevisions']:
+                # Key is constructed as per the required format
+                key = f'{period_prefix}_{section}'
+                section_df = extract_section(ticker_trend_data, section, period_idx)
+                if not section_df.empty:
+                    section_df['ticker'] = ticker
+                    # Combine with any existing DataFrame for the same section and period
+                    if key in dataframe_dict:
+                        dataframe_dict[key] = pd.concat([dataframe_dict[key], section_df])
+                    else:
+                        dataframe_dict[key] = section_df
+
+    # Set the index for each DataFrame in the dictionary
+    for key, df in dataframe_dict.items():
+        df.set_index(['ticker'], inplace=True)
+
+    return dataframe_dict
+
+
+def get_revisions(dataframe_dict: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
+    """
+    Get the revisions for each ticker in a dictionary of dataframes.
+
+    Parameters:
+    - dataframe_dict (Dict[str, pd.DataFrame]): Dictionary of dataframes containing various financial metrics.
+
+    Returns:
+    - Dict[str, pd.DataFrame]: Dictionary of dataframes containing revisions for each ticker.
+    """
+    eps_trend_dfs = {key: df for key, df in dataframe_dict.items() if 'epsTrend' in key}
+
+    revision_dfs = {}
+
+    for key, df in eps_trend_dfs.items():
+        revisions = df.loc[:, '7daysAgo':].apply(lambda x: (df['current'] - x) / x)
+        revisions['ticker'] = df.index  # Add the ticker index as a column
+        revisions.set_index('ticker', inplace=True)  # Set the ticker as the index
+        revision_dfs[key] = revisions
+
+    return revision_dfs
 
 
 def get_current_prices(tickers: List[str]) -> pd.DataFrame:

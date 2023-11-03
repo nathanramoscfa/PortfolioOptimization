@@ -233,7 +233,7 @@ def optimize_portfolio(
     weights_df_optimal = min_risk_weights.copy()
     weights_df_optimal.columns = [1]  # First column is the min risk portfolio
 
-    successful_runs = 1 # Initialize to 1 because the first row is the min risk portfolio
+    successful_runs = 1  # Initialize to 1 because the first row is the min risk portfolio
     risk_range = np.linspace(min_risk + 0.0005, max_risk, 99)
     for i, target_risk in tqdm(enumerate(risk_range)):
         if successful_runs >= 100:  # Stop if 100 successful portfolios are generated
