@@ -22,7 +22,8 @@ def get_historical_prices(
 
     Parameters:
     - tickers (List[str]): List of stock tickers to retrieve data for.
-    - period (str, optional): Time period to retrieve data for. Defaults to 'max'.
+    - period (str, optional): Time period to retrieve data for. Defaults to 'max'. Options include: '1d', '5d', '7d',
+        '60d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max'
     - start_date (str, optional): Start date for data retrieval. Defaults to None.
     - end_date (str, optional): End date for data retrieval. Defaults to None.
 
