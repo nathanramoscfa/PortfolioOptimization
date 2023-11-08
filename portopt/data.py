@@ -51,11 +51,9 @@ def get_historical_prices(
     return df.sort_index(axis=1)
 
 
-def get_summary_profile(
-        tickers: List[str]
-) -> pd.DataFrame:
+def get_summary_profile(tickers: List[str]) -> pd.DataFrame:
     """
-    Fetch summary profile for a list of stock tickers with rate limiting.
+    Fetch summary profile for a list of stock tickers.
 
     Parameters:
     - tickers (List[str]): List of stock tickers to fetch summary profile for.
@@ -64,26 +62,27 @@ def get_summary_profile(
     - pd.DataFrame: A DataFrame containing summary profile for each ticker,
         sorted by ticker symbol.
     """
-
     wait_time = 60 / SAFE_LIMIT  # time to wait between requests
     all_data = []
 
-    # Process in chunks according to the safe limit
-    for chunk in tqdm(
-            [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)], desc='Fetching Profiles'
-    ):
+    for chunk in tqdm([tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)],
+                      desc='Fetching Profiles'):
         ticker_string = ' '.join(chunk)
         data_dict = Ticker(ticker_string).summary_profile
         summary_profile = pd.DataFrame.from_dict(data_dict, orient='index')
+
+        # Convert index to string to ensure consistency
+        summary_profile.index = summary_profile.index.map(str)
+
         all_data.append(summary_profile)
 
         # Wait before making the next request if not processing the last chunk
         if len(chunk) == SAFE_LIMIT and len(tickers) > SAFE_LIMIT:
             time.sleep(wait_time)
 
-    # Concatenate all the dataframes into one
     final_data = pd.concat(all_data)
 
+    # Sorting by index, which is now ensured to be consistent
     return final_data.sort_index(axis=1)
 
 
