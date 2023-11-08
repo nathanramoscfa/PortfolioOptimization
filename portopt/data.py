@@ -35,7 +35,7 @@ def get_historical_prices(
 
     all_data = []
 
-    for chunk in [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)]:
+    for chunk in tqdm([tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)], desc='Downloading'):
         ticker_string = ' '.join(chunk)
         data = Ticker(ticker_string).history(period=period, start=start_date, end=end_date)['adjclose'].reset_index()
         all_data.append(data)
@@ -69,7 +69,9 @@ def get_summary_profile(
     all_data = []
 
     # Process in chunks according to the safe limit
-    for chunk in [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)]:
+    for chunk in tqdm(
+            [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)], desc='Fetching Profiles'
+    ):
         ticker_string = ' '.join(chunk)
         data_dict = Ticker(ticker_string).summary_profile
         summary_profile = pd.DataFrame.from_dict(data_dict, orient='index')
@@ -102,7 +104,7 @@ def get_summary_details(
     all_data = []
 
     # Process in chunks according to the safe limit
-    for chunk in [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)]:
+    for chunk in tqdm([tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)], desc='Fetching Details'):
         ticker_string = ' '.join(chunk)
         data_dict = Ticker(ticker_string).summary_detail
         summary_detail = pd.DataFrame.from_dict(data_dict, orient='index').transpose()
@@ -135,7 +137,9 @@ def get_key_stats(
     all_data = []
 
     # Process in chunks according to the safe limit
-    for chunk in [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)]:
+    for chunk in tqdm(
+            [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)], desc='Fetching Key Stats'
+    ):
         ticker_string = ' '.join(chunk)
         data_dict = Ticker(ticker_string).key_stats
         key_stats = pd.DataFrame.from_dict(data_dict, orient='index').transpose()
@@ -170,7 +174,9 @@ def get_earnings_trend(
     wait_time = 60 / SAFE_LIMIT  # time to wait between requests
     dataframe_dict = {}
 
-    for chunk in [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)]:
+    for chunk in tqdm(
+            [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)], desc='Fetching Earnings Trend'
+    ):
         ticker_string = ' '.join(chunk)
         data_dict = Ticker(ticker_string).earnings_trend
 
@@ -267,7 +273,9 @@ def get_current_prices(
     all_data = []
 
     # Process in chunks according to the safe limit
-    for chunk in [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)]:
+    for chunk in tqdm(
+            [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)], desc='Fetching Current Prices'
+    ):
         ticker_string = ' '.join(chunk)
         data_dict = Ticker(ticker_string).price
         current_prices = pd.DataFrame.from_dict(data_dict, orient='index').transpose()
