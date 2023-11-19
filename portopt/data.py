@@ -255,7 +255,9 @@ def get_revisions(
     return revision_dfs
 
 
-def get_current_prices(tickers: List[str]) -> pd.DataFrame:
+def get_current_prices(
+        tickers: List[str]
+) -> pd.DataFrame:
     """
     Fetch the current prices for a list of stock tickers with rate limiting.
 
@@ -287,6 +289,44 @@ def get_current_prices(tickers: List[str]) -> pd.DataFrame:
 
     # Sort DataFrame by ticker symbols
     return all_data.sort_index(axis=1)
+
+
+def get_financial_data(
+        tickers: List[str]
+) -> pd.DataFrame:
+    """
+    Fetch financial data for a list of stock tickers with rate limiting.
+
+    Parameters:
+    - tickers (List[str]): List of stock tickers to fetch financial data for.
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing financial data for each ticker, sorted by ticker symbol.
+    """
+
+    wait_time = 60 / SAFE_LIMIT  # time to wait between requests
+    all_data = []
+
+    # Process in chunks according to the safe limit
+    for chunk in tqdm(
+            [tickers[i:i + SAFE_LIMIT] for i in range(0, len(tickers), SAFE_LIMIT)], desc='Fetching Financial Data'
+    ):
+        ticker_string = ' '.join(chunk)
+        data = Ticker(ticker_string).financial_data
+
+        # Create a DataFrame from each ticker's details and append it to all_data
+        chunk_data = {ticker: pd.Series(details) for ticker, details in data.items()}
+        chunk_df = pd.DataFrame(chunk_data)
+        all_data.append(chunk_df)
+
+        # Wait before making the next request if not processing the last chunk
+        if len(chunk) == SAFE_LIMIT and len(tickers) > SAFE_LIMIT:
+            time.sleep(wait_time)
+
+    # Concatenate all the dataframes into one along the columns
+    final_data = pd.concat(all_data, axis=1)
+
+    return final_data.sort_index(axis=1)
 
 
 def get_risk_free_rate(
@@ -555,3 +595,11 @@ def get_sp100_tickers():
         # If the request was not successful, print the error code
         print(f"Failed to retrieve Wikipedia page: Status code {response.status_code}")
         return []
+
+
+def get_sector_list(summary_profile):
+    return list(summary_profile.sector.unique().sort_values())
+
+
+def get_industry_list(summary_profile):
+    return list(summary_profile.industry.unique().sort_values())
