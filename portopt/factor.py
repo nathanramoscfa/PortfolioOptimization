@@ -54,12 +54,12 @@ def calculate_revisions_score(
 
     # Reorder the DataFrame to have ticker names, sector, and industry first
     columns_order = ['longName', 'sector', 'industry', 'revisions_zscore'] + zscore_columns
-    final_df = revisions_df[columns_order]
+    df = revisions_df[columns_order]
 
     # Sort the DataFrame by the combined z-score
-    final_df = final_df.sort_values(by='revisions_zscore', ascending=False)
+    df = df.sort_values(by='revisions_zscore', ascending=False)
 
-    return final_df
+    return df
 
 
 def calculate_value_score(
@@ -135,9 +135,9 @@ def calculate_value_score(
     # Select the columns to be displayed in the final DataFrame
     columns_to_display = (['longName', 'sector', 'industry', 'value_zscore'] +
                           [ratio + '_zscore' for ratio in ratios.keys()])
-    final_df = zscores_df[columns_to_display]
+    df = zscores_df[columns_to_display]
 
-    return final_df
+    return df
 
 
 def calculate_momentum_score(
@@ -291,9 +291,9 @@ def calculate_profitability_score(
 
     # Select the columns to be displayed in the final DataFrame
     columns_to_display = ['longName', 'sector', 'industry', 'profitability_zscore'] + [metric + '_zscore' for metric in profitability_metrics]
-    final_df = profitability_scores_df[columns_to_display]
+    df = profitability_scores_df[columns_to_display]
 
-    return final_df
+    return df
 
 
 def calculate_reversal_score(
