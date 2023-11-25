@@ -56,9 +56,6 @@ def calculate_revisions_score(
     columns_order = ['longName', 'sector', 'industry', 'revisions_zscore'] + zscore_columns
     df = revisions_df[columns_order]
 
-    # Sort the DataFrame by the combined z-score
-    df = df.sort_values(by='revisions_zscore', ascending=False)
-
     return df
 
 
