@@ -238,7 +238,7 @@ def get_revisions(
 
     revision_dfs = {}
 
-    for key, df in eps_trend_dfs.items():
+    for key, df in tqdm(eps_trend_dfs.items()):
         revisions = df.loc[:, '7daysAgo':].apply(lambda x: (df['current'] - x) / x)
         revisions['ticker'] = df.index  # Add the ticker index as a column
         revisions.set_index('ticker', inplace=True)  # Set the ticker as the index
