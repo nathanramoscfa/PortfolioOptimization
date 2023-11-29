@@ -3,68 +3,12 @@ import numpy as np
 from scipy.stats import zscore
 
 
-def calculate_revisions_score(
-        revisions: dict,
-        summary_profile: pd.DataFrame,
-        current_prices: pd.DataFrame,
-        group_by: str = 'sector'
-):
-    """
-    Calculate winsorized z-scores for revisions scores grouped by industry or sector for multiple revision trends and
-    combine into a single score.
-
-    Parameters:
-        - revisions (dict): Dictionary containing revision trends DataFrames with revisions data.
-        - summary_profile (pd.DataFrame): DataFrame containing company profile information.
-        - current_prices (pd.DataFrame): DataFrame containing current prices with long names for tickers.
-        - group_by (str): Column name to group by, default is 'sector'.
-
-    Returns:
-        - pd.DataFrame: A DataFrame containing the ticker name, sector, industry, winsorized combined revisions
-            z-scores, and individual z-scores for each ticker.
-    """
-    # Initialize a DataFrame to store the mean revisions and z-scores for each trend
-    revisions_df = pd.DataFrame(index=summary_profile.index)
-
-    # Loop through each trend in the revisions dictionary
-    for trend_name, trend_data in revisions.items():
-        # Calculate the mean revision for each ticker
-        mean_revision = trend_data.mean(axis=1)
-        # Add the mean revision to the DataFrame
-        revisions_df[trend_name + '_mean_revision'] = mean_revision
-
-    # Join the sector, industry, and ticker names from the summary_profile and current_prices to the revisions_df
-    # DataFrame
-    revisions_df = revisions_df.join(summary_profile[['sector', 'industry']])
-    revisions_df = revisions_df.join(current_prices.loc['longName'])
-
-    # Calculate the z-scores for each trend within the specified group_by
-    for trend_name in revisions.keys():
-        zscore_column = trend_name + '_zscore'
-        revisions_df[zscore_column] = revisions_df.groupby(group_by)[trend_name + '_mean_revision'] \
-            .transform(lambda x: zscore(x, nan_policy='omit'))
-        # Winsorize the z-scores
-        revisions_df[zscore_column] = np.clip(revisions_df[zscore_column], -3, 3)
-
-    # Calculate the combined z-score
-    zscore_columns = [trend_name + '_zscore' for trend_name in revisions.keys()]
-    revisions_df['revisions_zscore'] = revisions_df[zscore_columns].mean(axis=1)
-    # Winsorize the combined z-scores
-    revisions_df['revisions_zscore'] = np.clip(revisions_df['revisions_zscore'], -3, 3)
-
-    # Reorder the DataFrame to have ticker names, sector, and industry first
-    columns_order = ['longName', 'sector', 'industry', 'revisions_zscore'] + zscore_columns
-    df = revisions_df[columns_order]
-
-    return df
-
-
 def calculate_value_score(
         summary_details: pd.DataFrame,
         summary_profile: pd.DataFrame,
         current_prices: pd.DataFrame,
         group_by: str = 'sector'
-):
+) -> pd.DataFrame:
     """
     Calculate winsorized z-scores for value scores grouped by industry or sector and include the group and individual
     factor z-scores in the final DataFrame, along with the long name of the ticker.
@@ -79,7 +23,7 @@ def calculate_value_score(
         - pd.DataFrame: DataFrame with ticker long name, 'sector', 'industry', grouped 'value_zscores', and individual
             z-scores for each value factor.
     """
-    # Combine the relevant fields from summary_details and key_stats
+    # Combine the relevant fields from summary_details
     ratios = {
         'forwardPE': summary_details,
         'dividendYield': summary_details.fillna(0)
@@ -112,8 +56,15 @@ def calculate_value_score(
         # Store the winsorized z-scores in the corresponding DataFrame column
         zscores_df[ratio + '_zscore'] = pd.Series(zscores_winsorized, index=non_nan_ratio_series.index).fillna(0)
 
-    # Calculate the mean z-score across all ratios for each ticker
-    zscores_df['mean_value_zscore'] = zscores_df.mean(axis=1)
+        # Group the z-scores by the specified group and store in the DataFrame
+        grouped_zscores = zscores_df.groupby(summary_profile[group_by])[ratio + '_zscore'].transform(
+            lambda x: zscore(x, nan_policy='omit')
+        )
+        zscores_df[ratio + '_grouped_zscore'] = np.clip(grouped_zscores, -3, 3)
+
+    # Calculate the mean grouped z-score across all ratios for each ticker
+    grouped_zscore_columns = [ratio + '_grouped_zscore' for ratio in ratios.keys()]
+    zscores_df['value_zscore'] = zscores_df[grouped_zscore_columns].mean(axis=1)
 
     # Join the sector and industry columns from the summary_profile to the zscores_df DataFrame
     zscores_df = zscores_df.join(summary_profile[['sector', 'industry']])
@@ -121,18 +72,12 @@ def calculate_value_score(
     # Add the long name of the ticker from current_prices Series
     zscores_df['longName'] = current_prices.loc['longName']
 
-    # Group by the sector or industry and calculate z-scores within each group for the mean z-score
-    zscores_df['value_zscore'] = zscores_df.groupby(group_by)['mean_value_zscore'].transform(
-        lambda x: zscore(x, nan_policy='omit')
-    )
-
-    # Winsorize the combined z-scores
-    zscores_df['value_zscore'] = np.clip(zscores_df['value_zscore'], -3, 3)
-
     # Select the columns to be displayed in the final DataFrame
-    columns_to_display = (['longName', 'sector', 'industry', 'value_zscore'] +
-                          [ratio + '_zscore' for ratio in ratios.keys()])
+    columns_to_display = ['longName', 'sector', 'industry', 'value_zscore'] + grouped_zscore_columns
     df = zscores_df[columns_to_display]
+
+    # Add index name
+    df.index.name = 'symbol'
 
     return df
 
@@ -224,6 +169,9 @@ def calculate_momentum_score(
         'longName', 'sector', 'industry', 'momentum_zscore', 'zscores_12_1', 'zscores_6_1', 'zscores_3_1'
     ]]
 
+    # Add index name
+    final_scores.index.name = 'symbol'
+
     return final_scores
 
 
@@ -232,7 +180,7 @@ def calculate_profitability_score(
         summary_profile: pd.DataFrame,
         current_prices: pd.DataFrame,
         group_by: str = 'sector'
-):
+) -> pd.DataFrame:
     """
     Calculate winsorized z-scores for profitability scores grouped by industry or sector and include the group and
     individual factor z-scores in the final DataFrame, along with the long name of the ticker.
@@ -248,47 +196,97 @@ def calculate_profitability_score(
             individual z-scores for each profitability factor.
     """
     # Define the profitability metrics we're interested in
-    profitability_metrics = [
-        'profitMargins',  # Net Profit Margin
-        'returnOnAssets',   # Return on Assets
-        'returnOnEquity'   # Return on Equity
-    ]
+    profitability_metrics = ['profitMargins', 'returnOnAssets', 'returnOnEquity']
 
     # Initialize DataFrame to store z-scores for each profitability metric
     profitability_scores_df = pd.DataFrame(index=financial_data.columns)
 
     # Calculate z-scores for each profitability metric
     for metric in profitability_metrics:
-        # Select the metric, convert to numeric, handling errors by coercing to NaN
         metric_series = pd.to_numeric(financial_data.loc[metric], errors='coerce')
-
-        # Drop NaNs from the metric series
         non_nan_metric_series = metric_series.dropna()
-
-        # Calculate the z-scores for the non-NaN values
         zscores = zscore(non_nan_metric_series, nan_policy='omit')
+        zscores_winsorized = np.clip(zscores, -3, 3)
+        profitability_scores_df[metric + '_zscore'] = pd.Series(zscores_winsorized, index=non_nan_metric_series.index).fillna(0)
 
-        # Store the z-scores in the corresponding DataFrame column
-        profitability_scores_df[metric + '_zscore'] = pd.Series(zscores, index=non_nan_metric_series.index).fillna(0)
+        # Group the z-scores by the specified group and store in the DataFrame
+        grouped_zscores = profitability_scores_df.groupby(summary_profile[group_by])[metric + '_zscore'].transform(
+            lambda x: zscore(x, nan_policy='omit')
+        )
+        profitability_scores_df[metric + '_grouped_zscore'] = np.clip(grouped_zscores, -3, 3)
 
-    # Calculate the mean z-score across all profitability metrics for each ticker
-    profitability_scores_df['mean_profitability_zscore'] = profitability_scores_df.mean(axis=1)
+    # Calculate the mean grouped z-score across all profitability metrics for each ticker
+    grouped_zscore_columns = [metric + '_grouped_zscore' for metric in profitability_metrics]
+    profitability_scores_df['profitability_zscore'] = profitability_scores_df[grouped_zscore_columns].mean(axis=1)
 
-    # Join the sector and industry columns from the summary_profile to the profitability_scores_df DataFrame
-    profitability_scores_df = profitability_scores_df.join(summary_profile[['sector', 'industry']], how='left')
-
-    # Add the long name of the ticker from current_prices
+    # Join the sector, industry, and ticker long name
+    profitability_scores_df = profitability_scores_df.join(summary_profile[['sector', 'industry']])
     profitability_scores_df['longName'] = current_prices.loc['longName']
 
-    # Group by the sector or industry and calculate z-scores within each group for the mean z-score
-    profitability_scores_df['profitability_zscore'] = profitability_scores_df.groupby(group_by)['mean_profitability_zscore'].transform(lambda x: zscore(x, nan_policy='omit'))
+    # Select the columns to be displayed in the final DataFrame
+    columns_to_display = ['longName', 'sector', 'industry', 'profitability_zscore'] + grouped_zscore_columns
+    df = profitability_scores_df[columns_to_display]
 
-    # Winsorize the grouped z-scores to no less than -3 and no more than +3
-    profitability_scores_df['profitability_zscore'] = np.clip(profitability_scores_df['profitability_zscore'], -3, 3)
+    # Add index name
+    df.index.name = 'symbol'
+
+    return df
+
+
+def calculate_revisions_score(
+        revisions: dict,
+        summary_profile: pd.DataFrame,
+        current_prices: pd.DataFrame,
+        group_by: str = 'sector'
+) -> pd.DataFrame:
+    """
+    Calculate winsorized z-scores for revisions scores grouped by industry or sector for multiple revision trends and
+    combine into a single score.
+
+    Parameters:
+        - revisions (dict): Dictionary containing revision trends DataFrames with revisions data.
+        - summary_profile (pd.DataFrame): DataFrame containing company profile information.
+        - current_prices (pd.DataFrame): DataFrame containing current prices with long names for tickers.
+        - group_by (str): Column name to group by, default is 'sector'.
+
+    Returns:
+        - pd.DataFrame: A DataFrame containing the ticker name, sector, industry, winsorized combined revisions
+            z-scores, and individual z-scores for each ticker.
+    """
+    # Initialize a DataFrame to store the mean revisions and z-scores for each trend
+    revisions_df = pd.DataFrame(index=summary_profile.index)
+
+    # Loop through each trend in the revisions dictionary
+    for trend_name, trend_data in revisions.items():
+        mean_revision = trend_data.mean(axis=1)
+        revisions_df[trend_name + '_mean_revision'] = mean_revision
+
+        # Calculate individual z-scores for each trend and winsorize them
+        zscore_column = trend_name + '_zscore'
+        zscores = zscore(mean_revision, nan_policy='omit')
+        zscores_winsorized = np.clip(zscores, -3, 3)
+        revisions_df[zscore_column] = pd.Series(zscores_winsorized, index=mean_revision.index).fillna(0)
+
+        # Group the z-scores by the specified group and store in the DataFrame
+        grouped_zscores = revisions_df.groupby(summary_profile[group_by])[zscore_column].transform(
+            lambda x: zscore(x, nan_policy='omit')
+        )
+        revisions_df[zscore_column + '_grouped'] = np.clip(grouped_zscores, -3, 3)
+
+    # Calculate the mean grouped z-score across all trends for each ticker
+    grouped_zscore_columns = [trend_name + '_zscore_grouped' for trend_name in revisions.keys()]
+    revisions_df['revisions_zscore'] = revisions_df[grouped_zscore_columns].mean(axis=1)
+
+    # Join the sector, industry, and ticker names
+    revisions_df = revisions_df.join(summary_profile[['sector', 'industry']])
+    revisions_df = revisions_df.join(current_prices.loc['longName'])
 
     # Select the columns to be displayed in the final DataFrame
-    columns_to_display = ['longName', 'sector', 'industry', 'profitability_zscore'] + [metric + '_zscore' for metric in profitability_metrics]
-    df = profitability_scores_df[columns_to_display]
+    columns_order = ['longName', 'sector', 'industry', 'revisions_zscore'] + grouped_zscore_columns
+    df = revisions_df[columns_order]
+
+    # Add index name
+    df.index.name = 'symbol'
 
     return df
 
@@ -352,6 +350,9 @@ def calculate_reversal_score(
         'longName', 'sector', 'industry', 'reversal_zscore', 'zscores_weekly', 'zscores_monthly'
     ]]
 
+    # Add index name
+    final_scores.index.name = 'symbol'
+
     return final_scores
 
 
@@ -385,22 +386,22 @@ def calculate_multifactor_model(
     # Calculate individual factor scores
     value_scores = calculate_value_score(
         summary_details, summary_profile, current_prices, group_by)['value_zscore']
-    revisions_scores = calculate_revisions_score(
-        revisions, summary_profile, current_prices, group_by)['revisions_zscore']
     momentum_scores = calculate_momentum_score(
         historical_prices, summary_profile, current_prices, group_by)['momentum_zscore']
-    reversal_scores = calculate_reversal_score(
-        historical_prices, summary_profile, current_prices, group_by)['reversal_zscore']
     profitability_scores = calculate_profitability_score(
         financial_data, summary_profile, current_prices, group_by)['profitability_zscore']
+    revisions_scores = calculate_revisions_score(
+        revisions, summary_profile, current_prices, group_by)['revisions_zscore']
+    reversal_scores = calculate_reversal_score(
+        historical_prices, summary_profile, current_prices, group_by)['reversal_zscore']
 
     # Combine factor scores into a combined score dataframe
     combined_scores = pd.DataFrame({
         'Value': value_scores,
-        'Revisions': revisions_scores,
         'Momentum': momentum_scores,
-        'Reversal': reversal_scores,
-        'Profitability': profitability_scores
+        'Profitability': profitability_scores,
+        'Revisions': revisions_scores,
+        'Reversal': reversal_scores
     })
 
     # Add longName, sector, and industry to the combined_scores dataframe
@@ -409,16 +410,19 @@ def calculate_multifactor_model(
     combined_scores['Industry'] = summary_profile['industry']
 
     # Reorder the columns to have longName, sector, and industry first
-    columns_order = ['longName', 'Sector', 'Industry', 'Value', 'Revisions', 'Momentum', 'Reversal', 'Profitability']
+    columns_order = ['longName', 'Sector', 'Industry', 'Value', 'Momentum', 'Profitability', 'Revisions', 'Reversal']
     combined_scores = combined_scores[columns_order]
 
     # Simple average for demonstration purposes to create a combined score
-    combined_scores['Combined'] = combined_scores[['Value', 'Revisions', 'Momentum', 'Reversal', 'Profitability']].mean(axis=1)
+    combined_scores['Combined'] = combined_scores[['Value', 'Momentum', 'Profitability', 'Revisions', 'Reversal']].mean(axis=1)
 
     # Rank stocks by the combined score
     combined_scores['Rank'] = combined_scores['Combined'].rank(ascending=False)
 
     # Return the ranked tickers in a dataframe, sorted by rank
     ranked_tickers = combined_scores.sort_values('Rank').round(2)
+
+    # Add index name
+    ranked_tickers.index.name = 'symbol'
 
     return ranked_tickers
