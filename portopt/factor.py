@@ -414,7 +414,9 @@ def calculate_multifactor_model(
     combined_scores = combined_scores[columns_order]
 
     # Simple average for demonstration purposes to create a combined score
-    combined_scores['Combined'] = combined_scores[['Value', 'Momentum', 'Profitability', 'Revisions', 'Reversal']].mean(axis=1)
+    combined_scores['Combined'] = combined_scores[[
+        'Value', 'Momentum', 'Profitability', 'Revisions', 'Reversal'
+    ]].mean(axis=1)
 
     # Rank stocks by the combined score
     combined_scores['Rank'] = combined_scores['Combined'].rank(ascending=False)

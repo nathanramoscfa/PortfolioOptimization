@@ -25,7 +25,7 @@ def format_with_percent(x: Any, pos: Any) -> str:
 
 def format_with_commas(x: Any, pos: Any) -> str:
     """
-    Formats a number with commas as thousand separators.
+    Formats a number with commas as a thousand separators.
 
     Parameters:
     - x (Any): The number to be formatted.
@@ -724,3 +724,32 @@ def plot_optimal_portfolio(
 
         plt.grid()
         plt.show()
+
+
+def plot_factor_correlation(
+        dataframe: pd.DataFrame,
+        columns: list,
+        title: str = 'Correlation Matrix of Factor Scores',
+        figsize: tuple = (10, 8),
+        cmap_style: int = 220
+):
+    """
+    Plots a correlation matrix heatmap for the specified columns of a DataFrame.
+
+    Parameters:
+    - dataframe (pd.DataFrame): The DataFrame containing the factor scores.
+    - columns (list): The columns to be plotted.
+    - title (str): The title for the plot. Defaults to 'Correlation Matrix'.
+    - figsize (tuple): The size of the figure. Defaults to (10, 8).
+    - cmap_style (int): The style of the color map. Defaults to 220.
+
+    Returns:
+    - None
+    """
+    corr = dataframe[columns].corr()
+    plt.figure(figsize=figsize)
+    cmap = sns.diverging_palette(cmap_style, 10, as_cmap=True)
+    sns.heatmap(corr, cmap=cmap, vmax=.3, center=0,
+                square=True, linewidths=.5, cbar_kws={"shrink": .5}, annot=True)
+    plt.title(title)
+    plt.show()
