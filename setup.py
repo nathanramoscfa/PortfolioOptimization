@@ -6,7 +6,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="PortfolioOptimization",
-    version="0.0.9",
+    version="0.0.10",
     author="Nathan Ramos, CFA®",
     author_email="nathan.ramos.github@gmail.com",
     description="A package for portfolio optimization.",
