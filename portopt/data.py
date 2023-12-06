@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 # Constants
 BILLION = 1_000_000_000
-SAFE_LIMIT = 12  # Maximum number of tickers to process in one request
+SAFE_LIMIT = 10  # Maximum number of tickers to process in one request
 
 
 def get_historical_prices(
