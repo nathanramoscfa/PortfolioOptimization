@@ -10,16 +10,20 @@ PortfolioOptimization is a Python package for performing portfolio optimization 
 - Algorithms for optimizing portfolios based on various financial metrics.
 - Backtesting functionality for evaluating portfolio performance.
 - Plotting tools for visualization of portfolios and backtests.
+- Factor scoring model for ranking stocks based on financial metrics.
 - Easy-to-extend architecture for adding custom optimization algorithms and metrics.
 
 ## Installation
 
 ### Via Pip
+In order to install PortfolioOptimization via pip, simply run the following command in your terminal:
 ```bash
 pip install PortfolioOptimization
 ```
 
 ### Via GitHub
+In order to install PortfolioOptimization via GitHub, you must first clone the repository and install the required 
+dependencies. This can be done by running the following commands in your terminal:
 ```bash
 git clone https://github.com/nathanramoscfa/PortfolioOptimization.git
 cd PortfolioOptimization
