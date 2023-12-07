@@ -1,11 +1,8 @@
 from setuptools import setup, find_packages
 
-# Read in requirements.txt for other dependencies
+# Read in requirements.txt
 with open("requirements.txt") as f:
     requirements = f.read().splitlines()
-
-# Add the custom dependency for the forked yahooquery
-requirements.append("yahooquery @ git+https://github.com/nathanramoscfa/yahooquery.git")
 
 setup(
     name="PortfolioOptimization",
