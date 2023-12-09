@@ -3,24 +3,22 @@ import numpy as np
 from scipy.stats import zscore
 
 
-def calculate_value_score(
-        summary_details: pd.DataFrame,
-        summary_profile: pd.DataFrame,
-        current_prices: pd.DataFrame,
-        group_by: str = 'sector'
-) -> pd.DataFrame:
+def calculate_value_score(summary_details: pd.DataFrame,
+                          summary_profile: pd.DataFrame,
+                          current_prices: pd.DataFrame,
+                          group_by: str = 'sector') -> pd.DataFrame:
     """
     Calculate winsorized z-scores for value scores grouped by industry or sector and include the group and individual
     factor z-scores in the final DataFrame, along with the long name of the ticker.
 
-    Parameters:
-        - summary_details (pd.DataFrame): DataFrame containing financial ratios with tickers as columns.
-        - summary_profile (pd.DataFrame): DataFrame containing company profile information with tickers as columns.
-        - current_prices (pd.Series): Series containing long names for tickers.
-        - group_by (str): 'sector' or 'industry' to specify the grouping criterion for z-score calculation.
+    Args:
+        summary_details (pd.DataFrame): DataFrame containing financial ratios with tickers as columns.
+        summary_profile (pd.DataFrame): DataFrame containing company profile information with tickers as columns.
+        current_prices (pd.Series): Series containing long names for tickers.
+        group_by (str): 'sector' or 'industry' to specify the grouping criterion for z-score calculation.
 
     Returns:
-        - pd.DataFrame: DataFrame with ticker long name, 'sector', 'industry', grouped 'value_zscores', and individual
+        pd.DataFrame: DataFrame with ticker long name, 'sector', 'industry', grouped 'value_zscores', and individual
             z-scores for each value factor.
     """
     # Combine the relevant fields from summary_details
@@ -82,24 +80,22 @@ def calculate_value_score(
     return df
 
 
-def calculate_momentum_score(
-        historical_prices: pd.DataFrame,
-        summary_profile: pd.DataFrame,
-        current_prices: pd.DataFrame,
-        group_by: str = 'sector'
-):
+def calculate_momentum_score(historical_prices: pd.DataFrame,
+                             summary_profile: pd.DataFrame,
+                             current_prices: pd.DataFrame,
+                             group_by: str = 'sector') -> pd.DataFrame:
     """
     Calculate winsorized z-scores for momentum scores grouped by industry or sector and include the group and individual
     factor z-scores in the final DataFrame, along with the long name of the ticker.
 
-    Parameters:
-        - historical_prices (pd.DataFrame): DataFrame containing historical prices with tickers as columns.
-        - summary_profile (pd.DataFrame): DataFrame containing company profile information with tickers as columns.
-        - current_prices (pd.DataFrame): DataFrame containing current prices with tickers as columns.
-        - group_by (str): 'sector' or 'industry' to specify the grouping criterion for z-score calculation.
+    Args:
+        historical_prices (pd.DataFrame): DataFrame containing historical prices with tickers as columns.
+        summary_profile (pd.DataFrame): DataFrame containing company profile information with tickers as columns.
+        current_prices (pd.DataFrame): DataFrame containing current prices with tickers as columns.
+        group_by (str): 'sector' or 'industry' to specify the grouping criterion for z-score calculation.
 
     Returns:
-        - pd.DataFrame: DataFrame with ticker long name, 'sector', 'industry', grouped 'momentum_zscore', and individual
+        pd.DataFrame: DataFrame with ticker long name, 'sector', 'industry', grouped 'momentum_zscore', and individual
             z-scores for each momentum factor.
     """
     # Define trading days in a month and year for financial data
@@ -175,24 +171,22 @@ def calculate_momentum_score(
     return final_scores
 
 
-def calculate_profitability_score(
-        financial_data: pd.DataFrame,
-        summary_profile: pd.DataFrame,
-        current_prices: pd.DataFrame,
-        group_by: str = 'sector'
-) -> pd.DataFrame:
+def calculate_profitability_score(financial_data: pd.DataFrame,
+                                  summary_profile: pd.DataFrame,
+                                  current_prices: pd.DataFrame,
+                                  group_by: str = 'sector') -> pd.DataFrame:
     """
     Calculate winsorized z-scores for profitability scores grouped by industry or sector and include the group and
     individual factor z-scores in the final DataFrame, along with the long name of the ticker.
 
-    Parameters:
-        - financial_data (pd.DataFrame): DataFrame containing financial ratios with tickers as columns.
-        - summary_profile (pd.DataFrame): DataFrame containing company profile information with tickers as columns.
-        - current_prices (pd.DataFrame): DataFrame containing current prices with tickers as columns.
-        - group_by (str): 'sector' or 'industry' to specify the grouping criterion for z-score calculation.
+    Args:
+        financial_data (pd.DataFrame): DataFrame containing financial ratios with tickers as columns.
+        summary_profile (pd.DataFrame): DataFrame containing company profile information with tickers as columns.
+        current_prices (pd.DataFrame): DataFrame containing current prices with tickers as columns.
+        group_by (str): 'sector' or 'industry' to specify the grouping criterion for z-score calculation.
 
     Returns:
-        - pd.DataFrame: DataFrame with ticker long name, 'sector', 'industry', grouped 'profitability_zscore', and
+        pd.DataFrame: DataFrame with ticker long name, 'sector', 'industry', grouped 'profitability_zscore', and
             individual z-scores for each profitability factor.
     """
     # Define the profitability metrics we're interested in
@@ -233,24 +227,22 @@ def calculate_profitability_score(
     return df
 
 
-def calculate_revisions_score(
-        revisions: dict,
-        summary_profile: pd.DataFrame,
-        current_prices: pd.DataFrame,
-        group_by: str = 'sector'
-) -> pd.DataFrame:
+def calculate_revisions_score(revisions: dict,
+                              summary_profile: pd.DataFrame,
+                              current_prices: pd.DataFrame,
+                              group_by: str = 'sector') -> pd.DataFrame:
     """
     Calculate winsorized z-scores for revisions scores grouped by industry or sector for multiple revision trends and
     combine into a single score.
 
-    Parameters:
-        - revisions (dict): Dictionary containing revision trends DataFrames with revisions data.
-        - summary_profile (pd.DataFrame): DataFrame containing company profile information.
-        - current_prices (pd.DataFrame): DataFrame containing current prices with long names for tickers.
-        - group_by (str): Column name to group by, default is 'sector'.
+    Args:
+        revisions (dict): Dictionary containing revision trends DataFrames with revisions data.
+        summary_profile (pd.DataFrame): DataFrame containing company profile information.
+        current_prices (pd.DataFrame): DataFrame containing current prices with long names for tickers.
+        group_by (str): Column name to group by, default is 'sector'.
 
     Returns:
-        - pd.DataFrame: A DataFrame containing the ticker name, sector, industry, winsorized combined revisions
+        pd.DataFrame: A DataFrame containing the ticker name, sector, industry, winsorized combined revisions
             z-scores, and individual z-scores for each ticker.
     """
     # Initialize a DataFrame to store the mean revisions and z-scores for each trend
@@ -291,12 +283,24 @@ def calculate_revisions_score(
     return df
 
 
-def calculate_reversal_score(
-        historical_prices: pd.DataFrame,
-        summary_profile: pd.DataFrame,
-        current_prices: pd.DataFrame,
-        group_by: str = 'sector'
-):
+def calculate_reversal_score(historical_prices: pd.DataFrame,
+                             summary_profile: pd.DataFrame,
+                             current_prices: pd.DataFrame,
+                             group_by: str = 'sector') -> pd.DataFrame:
+    """
+    Calculate winsorized z-scores for reversal scores grouped by industry or sector and include the group and individual
+    factor z-scores in the final DataFrame, along with the long name of the ticker.
+
+    Args:
+        historical_prices (pd.DataFrame): DataFrame containing historical prices with tickers as columns.
+        summary_profile (pd.DataFrame): DataFrame containing company profile information with tickers as columns.
+        current_prices (pd.DataFrame): DataFrame containing current prices with tickers as columns.
+        group_by (str): 'sector' or 'industry' to specify the grouping criterion for z-score calculation.
+
+    Returns:
+        pd.DataFrame: DataFrame with ticker long name, 'sector', 'industry', grouped 'reversal_zscore', and individual
+            z-scores for each reversal factor.
+    """
     # Define trading days for a week and a month for financial data
     trading_days_in_week = 5
     trading_days_in_month = 21
@@ -356,31 +360,29 @@ def calculate_reversal_score(
     return final_scores
 
 
-def calculate_multifactor_model(
-    summary_details: pd.DataFrame,
-    historical_prices: pd.DataFrame,
-    financial_data: pd.DataFrame,
-    summary_profile: pd.DataFrame,
-    revisions: dict,
-    current_prices: pd.DataFrame,
-    group_by: str = 'sector'
-):
+def calculate_multifactor_model(summary_details: pd.DataFrame,
+                                historical_prices: pd.DataFrame,
+                                financial_data: pd.DataFrame,
+                                summary_profile: pd.DataFrame,
+                                revisions: dict,
+                                current_prices: pd.DataFrame,
+                                group_by: str = 'sector') -> pd.DataFrame:
     """
     Calculate the multifactor model for each ticker and return a DataFrame with the combined score and individual
     factor scores.
 
-    Parameters:
-        - summary_details (pd.DataFrame): DataFrame containing financial ratios with tickers as columns.
-        - key_stats (pd.DataFrame): DataFrame containing financial ratios with tickers as columns.
-        - historical_prices (pd.DataFrame): DataFrame containing historical prices with tickers as columns.
-        - financial_data (pd.DataFrame): DataFrame containing financial ratios with tickers as columns.
-        - summary_profile (pd.DataFrame): DataFrame containing company profile information with tickers as columns.
-        - revisions (dict): Dictionary containing revision trends DataFrames with revisions data.
-        - current_prices (pd.DataFrame): DataFrame containing current prices with tickers as columns.
-        - group_by (str): 'sector' or 'industry' to specify the grouping criterion for z-score calculation.
+    Args:
+        summary_details (pd.DataFrame): DataFrame containing financial ratios with tickers as columns.
+        key_stats (pd.DataFrame): DataFrame containing financial ratios with tickers as columns.
+        historical_prices (pd.DataFrame): DataFrame containing historical prices with tickers as columns.
+        financial_data (pd.DataFrame): DataFrame containing financial ratios with tickers as columns.
+        summary_profile (pd.DataFrame): DataFrame containing company profile information with tickers as columns.
+        revisions (dict): Dictionary containing revision trends DataFrames with revisions data.
+        current_prices (pd.DataFrame): DataFrame containing current prices with tickers as columns.
+        group_by (str): 'sector' or 'industry' to specify the grouping criterion for z-score calculation.
 
     Returns:
-        - pd.DataFrame: DataFrame with ticker long name, 'sector', 'industry', grouped 'combined_zscore', and individual
+        pd.DataFrame: DataFrame with ticker long name, 'sector', 'industry', grouped 'combined_zscore', and individual
             z-scores for each factor.
     """
     # Calculate individual factor scores

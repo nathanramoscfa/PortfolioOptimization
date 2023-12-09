@@ -13,12 +13,12 @@ def format_with_percent(x: Any, pos: Any) -> str:
     """
     Formats a number as a percentage string.
 
-    Parameters:
-    - x (Any): The number to be formatted.
-    - pos (Any): The position (unused, but required by FuncFormatter).
+    Args:
+        x (Any): The number to be formatted.
+        pos (Any): The position (unused, but required by FuncFormatter).
 
     Returns:
-    - str: The formatted percentage string.
+        str: The formatted percentage string.
     """
     return '{:,.0%}'.format(x)
 
@@ -27,29 +27,28 @@ def format_with_commas(x: Any, pos: Any) -> str:
     """
     Formats a number with commas as a thousand separators.
 
-    Parameters:
-    - x (Any): The number to be formatted.
-    - pos (Any): The position (unused, but required by FuncFormatter).
+    Args:
+        x (Any): The number to be formatted.
+        pos (Any): The position (unused, but required by FuncFormatter).
 
     Returns:
-    - str: The formatted string.
+        str: The formatted string.
     """
     return '${:,.0f}'.format(x)
 
 
-def plot_average_return(
-        average_historical_return: pd.Series,
-        historical_prices: pd.DataFrame,
-        **kwargs) -> None:
+def plot_average_return(average_historical_return: pd.Series,
+                        historical_prices: pd.DataFrame,
+                        **kwargs) -> None:
     """
     Plots the average historical returns as a bar chart.
 
-    Parameters:
-    - average_historical_return (pd.Series): The average return data.
-    - historical_prices (pd.DataFrame): The historical price data for the date range in the title.
+    Args:
+        average_historical_return (pd.Series): The average return data.
+        historical_prices (pd.DataFrame): The historical price data for the date range in the title.
 
     Returns:
-    - None
+        None
     """
     average_historical_return = average_historical_return.sort_values(ascending=False)
     with plt.style.context('dark_background'):
@@ -77,14 +76,14 @@ def plot_rebased_cumulative_value(
     """
     Plots the rebased cumulative value of historical prices.
 
-    Parameters:
-    - historical_prices (pd.DataFrame): The historical price data.
-    - figsize (tuple): The size of the figure. Defaults to (15, 5).
-    - logy (bool): Whether to use a logarithmic scale on the y-axis. Defaults to True.
-    - color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
+    Args:
+        historical_prices (pd.DataFrame): The historical price data.
+        figsize (tuple): The size of the figure. Defaults to (15, 5).
+        logy (bool): Whether to use a logarithmic scale on the y-axis. Defaults to True.
+        color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
 
     Returns:
-    - None
+        None
     """
     with plt.style.context('dark_background'):
         sns.set_palette(color_palette)
@@ -107,21 +106,20 @@ def plot_rebased_cumulative_value(
         plt.show()
 
 
-def plot_market_caps(
-        market_caps: pd.Series,
-        historical_prices: pd.DataFrame,
-        color_palette: str = 'colorblind',
-        **kwargs) -> None:
+def plot_market_caps(market_caps: pd.Series,
+                     historical_prices: pd.DataFrame,
+                     color_palette: str = 'colorblind',
+                     **kwargs) -> None:
     """
     Plots the market capitalizations as a bar chart.
 
-    Parameters:
-    - market_caps (pd.Series): The market capitalizations data.
-    - historical_prices (pd.DataFrame): The historical price data for the date range in the title.
-    - color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
+    Args:
+        market_caps (pd.Series): The market capitalizations data.
+        historical_prices (pd.DataFrame): The historical price data for the date range in the title.
+        color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
 
     Returns:
-    - None
+        None
     """
     market_caps = market_caps.sort_values(ascending=False)
     with plt.style.context('dark_background'):
@@ -138,21 +136,20 @@ def plot_market_caps(
         plt.show()
 
 
-def plot_market_weights(
-        market_weights: pd.Series,
-        historical_prices: pd.DataFrame,
-        color_palette: str = 'colorblind',
-        **kwargs: Any) -> None:
+def plot_market_weights(market_weights: pd.Series,
+                        historical_prices: pd.DataFrame,
+                        color_palette: str = 'colorblind',
+                        **kwargs: Any) -> None:
     """
     Plots the market weights as a bar chart.
 
-    Parameters:
-    - market_weights (pd.Series): The market weights data.
-    - historical_prices (pd.DataFrame): The historical price data for the date range in the title.
-    - color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
+    Args:
+        market_weights (pd.Series): The market weights data.
+        historical_prices (pd.DataFrame): The historical price data for the date range in the title.
+        color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
 
     Returns:
-    - None
+        None
     """
     market_weights = market_weights.sort_values(ascending=False)
     with plt.style.context('dark_background'):
@@ -171,22 +168,21 @@ def plot_market_weights(
         plt.show()
 
 
-def plot_correlation_matrix(
-        covariance_matrix: pd.DataFrame,
-        historical_prices: pd.DataFrame,
-        color_scheme: str = 'white',
-        title: str = 'Correlation Matrix') -> None:
+def plot_correlation_matrix(covariance_matrix: pd.DataFrame,
+                            historical_prices: pd.DataFrame,
+                            color_scheme: str = 'white',
+                            title: str = 'Correlation Matrix') -> None:
     """
     Plots the correlation matrix from a given covariance matrix.
 
-    Parameters:
-    - covariance_matrix (pd.DataFrame): The covariance matrix.
-    - historical_prices (pd.DataFrame): The historical price data for the date range in the title.
-    - color_scheme (str): The color scheme to use for the plot. Defaults to 'white'.
-    -
+    Args:
+        covariance_matrix (pd.DataFrame): The covariance matrix.
+        historical_prices (pd.DataFrame): The historical price data for the date range in the title.
+        color_scheme (str): The color scheme to use for the plot. Defaults to 'white'.
+        title (str): The title for the plot. Defaults to 'Correlation Matrix'.
 
     Returns:
-    - None
+        None
     """
     # Calculate the correlation matrix from the covariance matrix
     diagonal_sqrt = np.sqrt(np.diag(covariance_matrix))
@@ -211,21 +207,20 @@ def plot_correlation_matrix(
         plt.show()
 
 
-def plot_market_implied_expected_returns(
-        market_implied_expected_returns: pd.Series,
-        historical_prices: pd.DataFrame,
-        color_palette: str = 'colorblind',
-        **kwargs: Any) -> None:
+def plot_market_implied_expected_returns(market_implied_expected_returns: pd.Series,
+                                         historical_prices: pd.DataFrame,
+                                         color_palette: str = 'colorblind',
+                                         **kwargs: Any) -> None:
     """
     Plots the market-implied expected returns as a bar chart.
 
-    Parameters:
-    - market_implied_expected_returns (pd.Series): The market-implied expected return data.
-    - historical_prices (pd.DataFrame): The historical price data for the date range in the title.
-    - color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
+    Args:
+        market_implied_expected_returns (pd.Series): The market-implied expected return data.
+        historical_prices (pd.DataFrame): The historical price data for the date range in the title.
+        color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
 
     Returns:
-    - None
+        None
     """
     market_implied_expected_returns = market_implied_expected_returns.sort_values(ascending=False)
     with plt.style.context('dark_background'):
@@ -249,19 +244,18 @@ def plot_market_implied_expected_returns(
         plt.show()
 
 
-def plot_posterior_expected_returns(
-        posterior_expected_returns: pd.Series,
-        historical_prices: pd.DataFrame,
-        **kwargs) -> None:
+def plot_posterior_expected_returns(posterior_expected_returns: pd.Series,
+                                    historical_prices: pd.DataFrame,
+                                    **kwargs) -> None:
     """
     Plots the posterior expected returns as a bar chart.
 
-    Parameters:
-    - posterior_expected_returns (pd.Series): The posterior expected return data.
-    - historical_prices (pd.DataFrame): The historical price data for the date range in the title.
+    Args:
+        posterior_expected_returns (pd.Series): The posterior expected return data.
+        historical_prices (pd.DataFrame): The historical price data for the date range in the title.
 
     Returns:
-    - None
+        None
     """
     posterior_expected_returns = posterior_expected_returns.sort_values(ascending=False)
     with plt.style.context('dark_background'):
@@ -284,24 +278,23 @@ def plot_posterior_expected_returns(
         plt.show()
 
 
-def plot_efficient_frontier(
-        performance_df: pd.DataFrame,
-        optimal_portfolio_index: int,
-        risk_free_rate: float,
-        optimal_color: str = 'lime',
-        figsize: tuple[float, float] = (12, 8)) -> None:
+def plot_efficient_frontier(performance_df: pd.DataFrame,
+                            optimal_portfolio_index: int,
+                            risk_free_rate: float,
+                            optimal_color: str = 'lime',
+                            figsize: tuple[float, float] = (12, 8)) -> None:
     """
     Plots the efficient frontier, capital market line, and highlights the optimal portfolio.
 
-    Parameters:
-    - performance_df (pd.DataFrame): DataFrame containing portfolio performances.
-    - optimal_portfolio_index (int): The index of the optimal portfolio.
-    - risk_free_rate (float): The risk-free rate used to plot the Capital Market Line.
-    - optimal_color (str): The color to use for the optimal portfolio. Defaults to 'lime'.
-    - figsize (tuple): The size of the figure. Defaults to (12, 8).
+    Args:
+        performance_df (pd.DataFrame): DataFrame containing portfolio performances.
+        optimal_portfolio_index (int): The index of the optimal portfolio.
+        risk_free_rate (float): The risk-free rate used to plot the Capital Market Line.
+        optimal_color (str): The color to use for the optimal portfolio. Defaults to 'lime'.
+        figsize (tuple): The size of the figure. Defaults to (12, 8).
 
     Returns:
-    - None
+        None
     """
     with plt.style.context('dark_background'):
         plt.figure(figsize=figsize)
@@ -342,23 +335,22 @@ def plot_efficient_frontier(
         plt.show()
 
 
-def plot_portfolios(
-        performance_df_mc: pd.DataFrame,
-        optimal_portfolio: pd.Series,
-        performance_df_optimal: pd.DataFrame,
-        risk_free_rate: float) -> None:
+def plot_portfolios(performance_df_mc: pd.DataFrame,
+                    optimal_portfolio: pd.Series,
+                    performance_df_optimal: pd.DataFrame,
+                    risk_free_rate: float) -> None:
     """
     Plots the efficient frontier, random portfolios, the optimal portfolio, and the Capital Market Line.
 
-    Parameters:
-    - performance_df_mc (pd.DataFrame): DataFrame containing the performance metrics of Monte Carlo simulated
-                                        portfolios.
-    - optimal_portfolio (pd.Series): Series containing the performance metrics of the optimal portfolio.
-    - performance_df_optimal (pd.DataFrame): DataFrame containing the efficient frontier.
-    - risk_free_rate (float): The risk-free rate.
+    Args:
+        performance_df_mc (pd.DataFrame): DataFrame containing the performance metrics of Monte Carlo simulated
+            portfolios.
+        optimal_portfolio (pd.Series): Series containing the performance metrics of the optimal portfolio.
+        performance_df_optimal (pd.DataFrame): DataFrame containing the efficient frontier.
+        risk_free_rate (float): The risk-free rate.
 
     Returns:
-    - None
+        None
     """
     with plt.style.context('dark_background'):
         plt.figure(figsize=(12, 8))
@@ -399,28 +391,27 @@ def plot_portfolios(
         plt.show()
 
 
-def plot_backtest(
-        results_object: object,
-        logy: bool = False,
-        figsize: Tuple[int, int] = (15, 5),
-        color_palette: str = 'colorblind',
-        color_scheme: str = 'white',
-        title: str = 'Backtest Performance',
-        **kwargs: Any) -> None:
+def plot_backtest(results_object: object,
+                  logy: bool = False,
+                  figsize: Tuple[int, int] = (15, 5),
+                  color_palette: str = 'colorblind',
+                  color_scheme: str = 'white',
+                  title: str = 'Backtest Performance',
+                  **kwargs: Any) -> None:
     """
     Plots the backtest performance based on the provided results_object.
 
-    Parameters:
-    - results_object (object): The results object containing the backtest data.
-    - logy (bool, optional): Whether to use a logarithmic scale on the y-axis. Defaults to False.
-    - figsize (Tuple[int, int], optional): The size of the figure. Defaults to (15, 5).
-    - color_palette (str, optional): The color palette to use for the plot. Defaults to 'colorblind'.
-    - color_scheme (str, optional): The color scheme for the plot elements. Defaults to 'white'.
-    - title (str, optional): The title for the plot. Defaults to 'Backtest Performance'.
-    - **kwargs (Any, optional): Additional keyword arguments for the plotting function.
+    Args:
+        results_object (object): The results object containing the backtest data.
+        logy (bool, optional): Whether to use a logarithmic scale on the y-axis. Defaults to False.
+        figsize (Tuple[int, int], optional): The size of the figure. Defaults to (15, 5).
+        color_palette (str, optional): The color palette to use for the plot. Defaults to 'colorblind'.
+        color_scheme (str, optional): The color scheme for the plot elements. Defaults to 'white'.
+        title (str, optional): The title for the plot. Defaults to 'Backtest Performance'.
+        **kwargs (Any, optional): Additional keyword arguments for the plotting function.
 
     Returns:
-    - None
+        None
     """
     data = backtesting.get_series_from_object(results_object)
 
@@ -445,29 +436,28 @@ def plot_backtest(
         plt.show()
 
 
-def plot_security_weights(
-        results_object: object,
-        backtest: int = 1,
-        title: str = 'Security Weights (%)',
-        logy: bool = False,
-        figsize: Tuple[int, int] = (15, 5),
-        color_palette: str = 'colorblind',
-        color_scheme: str = 'white',
-        **kwargs: Any) -> None:
+def plot_security_weights(results_object: object,
+                          backtest: int = 1,
+                          title: str = 'Security Weights (%)',
+                          logy: bool = False,
+                          figsize: Tuple[int, int] = (15, 5),
+                          color_palette: str = 'colorblind',
+                          color_scheme: str = 'white',
+                          **kwargs: Any) -> None:
     """
     Plots the security weights.
 
-    Parameters:
-    - results_object (object): Object containing security weight results.
-    - backtest (int, default=1): The backtest to plot. Defaults to 1.
-    - title (str, default='Security Weights (%)'): Title of the plot.
-    - logy (bool): Whether to use a logarithmic scale on the y-axis. Defaults to False.
-    - figsize (tuple): The size of the figure. Defaults to (15, 5).
-    - color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
-    - color_scheme (str): The color scheme to use for the plot. Defaults to 'white'.
+    Args:
+        results_object (object): Object containing security weight results.
+        backtest (int, default=1): The backtest to plot. Defaults to 1.
+        title (str, default='Security Weights (%)'): Title of the plot.
+        logy (bool): Whether to use a logarithmic scale on the y-axis. Defaults to False.
+        figsize (tuple): The size of the figure. Defaults to (15, 5).
+        color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
+        color_scheme (str): The color scheme to use for the plot. Defaults to 'white'.
 
     Returns:
-    - None
+        None
     """
     if results_object is not None:
         data = results_object.get_security_weights(backtest - 1).iloc[1:]
@@ -496,28 +486,27 @@ def plot_security_weights(
         print("No results to plot security weights.")
 
 
-def plot_normalized_histogram(
-        results_object: Any,  # Replace with the specific type you expect
-        statistic: str = "monthly_sharpe",
-        figsize: Tuple[int, int] = (15, 5),
-        bins: int = 20,
-        alpha: float = 0.05,
-        color_scheme: str = 'white',
-        **kwargs: Any) -> None:
+def plot_normalized_histogram(results_object: Any,
+                              statistic: str = "monthly_sharpe",
+                              figsize: Tuple[int, int] = (15, 5),
+                              bins: int = 20,
+                              alpha: float = 0.05,
+                              color_scheme: str = 'white',
+                              **kwargs: Any) -> None:
     """
     Plots the distribution of a given statistic with normalized x-axis.
 
     Args:
-    - results_object (Any): Object containing backtest results.
-    - statistic (str): Statistic to plot.
-    - figsize (Tuple[int, int]): Figure size (width, height).
-    - bins (int): Number of histogram bins.
-    - alpha (float): Significance level for hypothesis test.
-    - color_scheme (str): Color scheme for the plot.
-    - kwargs (dict): Additional keyword arguments passed to the histogram function.
+        results_object (Any): Object containing backtest results.
+        statistic (str): Statistic to plot.
+        figsize (Tuple[int, int]): Figure size (width, height).
+        bins (int): Number of histogram bins.
+        alpha (float): Significance level for hypothesis test.
+        color_scheme (str): Color scheme for the plot.
+        kwargs (dict): Additional keyword arguments passed to the histogram function.
 
     Returns:
-    - None
+        None
     """
     # Title lookup dictionary
     titles = {
@@ -597,26 +586,26 @@ def plot_normalized_histogram(
         plt.show()
 
 
-def plot_random_portfolios(
-        performance_df_mc: pd.DataFrame,
-        optimal_portfolio: pd.Series,
-        performance_df_optimal: pd.DataFrame,
-        risk_free_rate: float,
-        optimal_color: str = 'lime',
-        figsize: tuple[float, float] = (12, 8)) -> None:
+def plot_random_portfolios(performance_df_mc: pd.DataFrame,
+                           optimal_portfolio: pd.Series,
+                           performance_df_optimal: pd.DataFrame,
+                           risk_free_rate: float,
+                           optimal_color: str = 'lime',
+                           figsize: tuple[float, float] = (12, 8)) -> None:
     """
     Plot the Efficient Frontier, Random Portfolios, Optimal Portfolio, and the Capital Market Line.
 
-    Parameters:
-    - performance_df_mc (pd.DataFrame): DataFrame containing the performance metrics of the Monte Carlo portfolios.
-    - optimal_portfolio (pd.Series): Series containing the performance metrics of the optimal portfolio.
-    - performance_df_optimal (pd.DataFrame): DataFrame containing the performance metrics along the efficient frontier.
-    - risk_free_rate (float): The risk-free rate to be used for the Capital Market Line.
-    - optimal_color (str): The color to be used for the optimal portfolio. Defaults to 'lime'.
-    - figsize (tuple): The size of the figure. Defaults to (12, 8).
+    Args:
+        performance_df_mc (pd.DataFrame): DataFrame containing the performance metrics of the Monte Carlo portfolios.
+        optimal_portfolio (pd.Series): Series containing the performance metrics of the optimal portfolio.
+        performance_df_optimal (pd.DataFrame): DataFrame containing the performance metrics along the efficient
+            frontier.
+        risk_free_rate (float): The risk-free rate to be used for the Capital Market Line.
+        optimal_color (str): The color to be used for the optimal portfolio. Defaults to 'lime'.
+        figsize (tuple): The size of the figure. Defaults to (12, 8).
 
     Returns:
-    - None: This function plots the graph and does not return any value.
+        None: This function plots the graph and does not return any value.
     """
     with plt.style.context('dark_background'):
         plt.figure(figsize=figsize)
@@ -661,22 +650,21 @@ def plot_random_portfolios(
         plt.show()
 
 
-def plot_dev_chart(
-        results_with_random_benchmarks: Any,  # Replace with the specific type you expect
-        statistic: str = 'monthly_sharpe',
-        backtest: int = 1,
-        plot: str = 'security_weights') -> None:
+def plot_dev_chart(results_with_random_benchmarks: Any,
+                   statistic: str = 'monthly_sharpe',
+                   backtest: int = 1,
+                   plot: str = 'security_weights') -> None:
     """
     Plots either security weights or cumulative return based on sort order of some statistic.
 
     Args:
-    - results_with_random_benchmarks (Any): Object containing backtest results.
-    - statistic (str): The statistic to sort by. Default is 'monthly_sharpe'.
-    - backtest (int): The backtest index to plot.
-    - plot (str): The type of plot to display ('security_weights' or 'cumulative_return').
+        results_with_random_benchmarks (Any): Object containing backtest results.
+        statistic (str): The statistic to sort by. Default is 'monthly_sharpe'.
+        backtest (int): The backtest index to plot.
+        plot (str): The type of plot to display ('security_weights' or 'cumulative_return').
 
     Returns:
-    - None
+        None
     """
     random_sortinos = results_with_random_benchmarks.stats.loc[statistic].sort_values(ascending=False)
     print(random_sortinos)
@@ -693,21 +681,20 @@ def plot_dev_chart(
         print("Invalid 'plot' parameter. Choose either 'security_weights' or 'cumulative_return'.")
 
 
-def plot_optimal_portfolio(
-        optimal_weights: pd.Series,
-        historical_prices: pd.DataFrame,
-        color_palette: str = 'colorblind',
-        **kwargs) -> None:
+def plot_optimal_portfolio(optimal_weights: pd.Series,
+                           historical_prices: pd.DataFrame,
+                           color_palette: str = 'colorblind',
+                           **kwargs) -> None:
     """
     Plots the optimal portfolio as a bar chart.
 
-    Parameters:
-    - optimal_weights (pd.Series): The optimal portfolio weightings.
-    - historical_prices (pd.DataFrame): The historical price data for the date range in the title.
-    - color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
+    Args:
+        optimal_weights (pd.Series): The optimal portfolio weightings.
+        historical_prices (pd.DataFrame): The historical price data for the date range in the title.
+        color_palette (str): The color palette to use for the plot. Defaults to 'colorblind'.
 
     Returns:
-    - None
+        None
     """
     optimal_weights = optimal_weights.sort_values(ascending=False)
     with plt.style.context('dark_background'):
@@ -726,22 +713,19 @@ def plot_optimal_portfolio(
         plt.show()
 
 
-def plot_factor_correlation(
-        dataframe: pd.DataFrame,
-        figsize: tuple = (10, 8),
-        cmap_style: int = 220
-):
+def plot_factor_correlation(dataframe: pd.DataFrame,
+                            figsize: tuple = (10, 8),
+                            cmap_style: int = 220) -> None:
     """
     Plots a correlation matrix heatmap for the specified columns of a DataFrame.
 
-    Parameters:
-    - dataframe (pd.DataFrame): The DataFrame containing the factor scores.
-    - title (str): The title for the plot. Defaults to 'Correlation Matrix'.
-    - figsize (tuple): The size of the figure. Defaults to (10, 8).
-    - cmap_style (int): The style of the color map. Defaults to 220.
+    Args:
+        dataframe (pd.DataFrame): The DataFrame containing the factor scores.
+        figsize (tuple): The size of the figure. Defaults to (10, 8).
+        cmap_style (int): The style of the color map. Defaults to 220.
 
     Returns:
-    - None
+        None
     """
     corr = dataframe[['Value', 'Momentum', 'Profitability', 'Revisions', 'Reversal']].corr()
     plt.figure(figsize=figsize)

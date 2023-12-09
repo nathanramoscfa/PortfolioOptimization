@@ -11,4 +11,4 @@ scipy>=1.11.2
 seaborn>=0.12.2
 setuptools>=68.0.0
 tqdm>=4.65.0
-yahooquery>=2.3.5
+yahooquery==2.3.5

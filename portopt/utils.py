@@ -1,3 +1,4 @@
+import bt
 import json
 import pandas as pd
 from . import backtesting
@@ -6,7 +7,16 @@ import matplotlib.pyplot as plt
 from typing import Dict
 
 
-def read_portfolio_config(file_path):
+def read_portfolio_config(file_path: str) -> Dict:
+    """
+    Reads a JSON file containing portfolio configuration data and returns a dictionary of the data.
+
+    Args:
+        file_path (str): Path to the JSON file
+
+    Returns:
+        Dict: Dictionary of portfolio configuration data
+    """
     with open(file_path, 'r') as f:
         config_data = json.load(f)
 
@@ -39,7 +49,16 @@ def read_portfolio_config(file_path):
     }
 
 
-def process_json(json_data: Dict):
+def process_json(json_data: Dict) -> Dict:
+    """
+    Processes a dictionary of JSON data and returns a dictionary of the data.
+
+    Args:
+        json_data (Dict): Dictionary of JSON data
+
+    Returns:
+        Dict: Dictionary of portfolio configuration data
+    """
     portfolio_data = json_data['portfolio']
     portfolio_tickers = [x['ticker'] for x in portfolio_data]
     weight_bounds = [(x['min_weight'], x['max_weight']) for x in portfolio_data]
@@ -68,7 +87,18 @@ def process_json(json_data: Dict):
     }
 
 
-def hypothesis_test_parameters(results_obj: object, statistic: str = 'monthly_sortino'):
+def hypothesis_test_parameters(results_obj: bt.backtest.Result,
+                               statistic: str = 'monthly_sortino') -> tuple:
+    """
+    Prints the random portfolios' stats, the optimal portfolio's stats, and the optimal portfolio's z-score.
+
+    Args:
+        results_obj (bt.Result): Backtest result object
+        statistic (str): Statistic to use for the hypothesis test
+
+    Returns:
+        tuple: Tuple of the random portfolios' stats, the benchmark's stats, and the random portfolios' stats
+    """
     r_stats = results_obj.stats.iloc[:, 1:]
     b_stats = results_obj.stats.iloc[:, :1].squeeze()
     random_stats = results_obj.stats.loc[statistic].sort_values(ascending=False)
@@ -85,7 +115,20 @@ def hypothesis_test_parameters(results_obj: object, statistic: str = 'monthly_so
     return r_stats, b_stats, random_stats
 
 
-def plot_hypothesis_test(results_obj: object, random_stats: pd.Series, chart_num: int = 0):
+def plot_hypothesis_test(results_obj: bt.backtest.Result,
+                         random_stats: pd.Series,
+                         chart_num: int = 0) -> None:
+    """
+    Plots the random portfolios' stats, the optimal portfolio's stats, and the optimal portfolio's z-score.
+
+    Args:
+        results_obj (bt.Result): Backtest result object
+        random_stats (pd.Series): Random portfolios' stats
+        chart_num (int): Chart number to plot
+
+    Returns:
+        None
+    """
     if chart_num == 0:
         plt.plot((backtesting.get_series_from_object(results_obj)[random_stats.index[0]]))
         plt.title(random_stats.index[0])
@@ -97,6 +140,17 @@ def plot_hypothesis_test(results_obj: object, random_stats: pd.Series, chart_num
                                        title='Security Weights (%): {}'.format(random_stats.index[0]))
 
 
-def display_market_caps(benchmark_portfolio, benchmark_name):
+def display_market_caps(benchmark_portfolio: Dict,
+                        benchmark_name: str = 'Benchmark') -> None:
+    """
+    Displays the market caps of the securities in the benchmark portfolio.
+
+    Args:
+        benchmark_portfolio (Dict): Benchmark portfolio dictionary
+        benchmark_name (str): Benchmark name
+
+    Returns:
+        None
+    """
     pd.DataFrame.from_dict(benchmark_portfolio, orient='index', columns=[benchmark_name]).squeeze().sort_values(
         ascending=False)
